@@ -27,6 +27,34 @@ def getPose(kps0, kps1, matches):
     
     return matches, R, t
 
+class Triangle():
+    
+    def __init__(self):
+        self.R = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32)
+        self.t = np.array([[0],[0],[0]], dtype=np.float32)
+        
+    def triangulate(self, K, R, t, x, y):
+        Rt1 = np.hstack([self.R.T, -self.R.T.dot(self.t)])
+        projection1 = np.dot(K, Rt1)
+        Rt2 = np.hstack([R.T, -R.T.dot(t)])
+        projection2 = np.dot(K, Rt2)
+        imagePoint1, imagePoint2 = x, y# cv2.undistortPoints(x, K, None, projection1), cv2.undistortPoints(y, K, None, projection2)
+        point3D = cv2.triangulatePoints(projection1, projection2, imagePoint1, imagePoint2).T
+        point3D = point3D[:, :3] / point3D[:, 3:4]
+        print(point3D)
+        # Reproject back into the two cameras
+        rvec1, _ = cv2.Rodrigues(self.R.T) # Change
+        rvec2, _ = cv2.Rodrigues(R.T) # Change
+        p1, _ = cv2.projectPoints(point3D, rvec1, -self.t, K, distCoeffs=None) # Change
+        p2, _ = cv2.projectPoints(point3D, rvec2, -t, K, distCoeffs=None) # Change
+
+        reprojection_error1 = np.linalg.norm(x - p1[0, :])
+        reprojection_error2 = np.linalg.norm(y - p2[0, :])
+        
+#         print(x, " -> ", p1, " ... Error : ", reprojection_error1)
+#         print(y, " -> ", p2, " ... Error : ", reprojection_error2)
+        return point3D
+        
 # Run slam on a video path
 def slam(video):
     try:
@@ -37,20 +65,24 @@ def slam(video):
             kps0 = extractor.kps
             des0 = extractor.des
             matches, kps1, des1 = extractor.extract(frame)
-
+            
             if matches:
-
+                
                 matches, R, t = getPose(kps0, kps1, matches)
-
-                print(t)
-
+                points = []
+                for match in matches:
+                    world = triangulator.triangulate(K, R, t, kps0[match.queryIdx].pt, kps1[match.trainIdx].pt)
+                    points.append(world)
+                triangulator.R = R
+                triangulator.t = t
+                    
                 for match in matches:
                     p1 = kps0[match.queryIdx].pt
                     p2 = kps1[match.trainIdx].pt
                     cv2.circle(frame, tuple(map(int, p1)), radius=3, color=(0,0,255))
                     cv2.circle(frame, tuple(map(int, p2)), radius=3, color=(0,255,0))
                     cv2.line(frame, tuple(map(int, p1)), tuple(map(int, p2)), color=(0,0,255))
-
+                                    
             if not ret:
                 vid.release()
                 break
@@ -70,8 +102,9 @@ if __name__ == "__main__":
     
     video = cv2.VideoCapture("highway.mp4")
     extractor = FeatureExtractor()
-    F = 500
+    triangulator = Triangle()
+    F = 700
     H = 1080
     W = 1920
-    K = np.array([[F, 0, W//2], [0, F, H//2], [0, 0, 1]])
+    K = np.array([[F, 0, W//2], [0, F, H//2], [0, 0, 1]], dtype=np.float32)
     slam(video)
