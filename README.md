@@ -5,7 +5,8 @@ A toy implementation of visual-based monocular simultaneous localization and map
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
-* You have installed Python3 on your machine.
+* Python3
+* Low expectations
 
 ## Installing vSLAM
 
