@@ -1,5 +1,5 @@
 <p align="center">
-    # vSLAM
+    <h1> vSLAM </h1>
 </p>
 
 A toy implementation of visual-based monocular simultaneous localization and mapping written from scratch in Python using OpenCV and Matplotlib.
