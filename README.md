@@ -2,6 +2,8 @@
 
 #### A toy implementation of visual-based monocular simultaneous localization and mapping written from scratch in Python using OpenCV and Matplotlib.
 
+![alt text](https://github.com/garrett-partenza-us/vSLAM/blob/master/Screen Shot 2022-03-22 at 10.18.12 PM.png?raw=true)
+
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
