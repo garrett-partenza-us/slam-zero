@@ -1,6 +1,5 @@
 <h1 align="center">vmSLAM</h1>
-
-#### A toy implementation of visual-based monocular simultaneous localization and mapping written from scratch in Python using OpenCV and Matplotlib.
+<h5 align="center">A toy implementation of visual-based monocular simultaneous localization and mapping written from scratch in Python</h5>
 
 ![alt text](https://github.com/garrett-partenza-us/vSLAM/blob/master/videos/Screen%20Shot%202022-03-22%20at%2010.18.12%20PM.png?raw=true)
 
