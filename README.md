@@ -1,4 +1,4 @@
-<h1 align="center">VM-SLAM>
+<h1 align="center">VM-SLAM</h1>
 
 A toy implementation of visual-based monocular simultaneous localization and mapping written from scratch in Python using OpenCV and Matplotlib.
 
